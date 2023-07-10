@@ -1,1 +1,175 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
+    </head>
+    <body>
+        <h1>Booster Simulator v1.0</h1>
+        Combien de boosters voulez-vous générer ? 
+        <input type="text" id="numboosters" value="24">
+        <br>
+        Quelle extension ? 
+        <select name="set" id="set">
+            <option value="mom">March of the Machine (MOM)</option>
+        </select>
+        <br><br>
+        <button onclick="generatepdf()">GENERATE PDF</button>
 
+    <script>
+        function generatepdf() {
+            var pdf = new jsPDF({
+                orientation: 'p',
+                unit: 'mm',
+                format: 'a4',
+                putOnlyUsedFonts:true
+                });
+
+            pdf.setLineHeightFactor(2); 
+
+            var boosters = [];
+            var pages = Math.ceil(document.getElementById("numboosters").value / 24); // 24 lines max per page
+
+            for (let i = 0; i < document.getElementById("numboosters").value; i++) {
+                switch(document.getElementById("set").value) {
+                    case "mom" :
+                        var booster = generateboosterMOM();
+                        break;
+                    } 
+                boosters.push(booster);
+                }
+            
+            var j = 0
+            for (j; j < (pages-1); j++) {
+                pdf.text(boosters.slice(j*24,(j+1)*24),20,20); //pour toutes les pages sauf la dernière, afficher 24 lignes
+                pdf.addPage();
+            }
+            pdf.text(boosters.slice(j*24),20,20); // pour la dernière page, afficher toutes les lignes restantes
+            pdf.save('boosters.pdf');          
+        }
+
+        function generateboosterMOM() {
+            var booster = "";
+
+            var SFCcommons  = [ 2,3,4,5,7,8,10,14,15,18,19,24,25,27,33,34,37,39,42,47,54,55,56,57,59,60,66,67,68,69,73,74,76,79,80,81,82,87,91,97,
+                                98,99,100,101,102,103,104,105,108,111,112,118,120,126,127,128,129,130,131,133,136,140,142,150,153,154,156,158,161,
+                                163,164,167,168,170,172,173,175,176,177,179,180,182,183,186,195,197,199,201,204,205,210,212,214,215,216,259,260,261,
+                                262,264,266];
+            var SFCuncos    = [ 13,29,30,31,35,41,44,45,46,48,50,53,70,71,84,85,95,96,106,107,117,121,123,124,138,139,141,152,159,162,165,166,181,
+                                196,202,203,206,207,208,209,220,223,227,243,246,247,248,251,253,254];
+            var SFCrares    = [ 9,11,16,26,32,40,51,52,58,77,83,86,89,93,94,109,110,122,132,135,144,155,160,171,174,184,185,187,198,211,218,221,222,224,
+                                225,226,228,229,244,249,250,252,256,263];
+            var SFCmythics  = [ 6,28,134,217,219,245,255,257,258,265];
+            var BATuncos    = [ 20,21,62,64,113,116,147,148,192,194,231,232,233,234,235,236,237,238,240,242];
+            var BATrares    = [ 22,23,61,63,114,145,146,190,191,230,241];
+            var BATmythics  = [ 1,115,149,193,239];
+            var FLPcommons  = [ 43,72,88,157,178];
+            var FLPuncos    = [ 36,38,49,78,92,119,143,151,188,189];
+            var FLPrares    = [ 17,75,90,137,200];
+            var FLPmythics  = [ 12,65,125,169,213];
+            var MULuncos    = [ "MUL_2","MUL_5","MUL_10","MUL_12","MUL_18","MUL_19","MUL_24","MUL_25","MUL_26","MUL_28","MUL_31","MUL_37","MUL_40","MUL_43",
+                                "MUL_46","MUL_55","MUL_56","MUL_57","MUL_58","MUL_59"];
+            var MULrares    = [ "MUL_1","MUL_6","MUL_7","MUL_8","MUL_9","MUL_13","MUL_14","MUL_15","MUL_20","MUL_22","MUL_27","MUL_30","MUL_32",
+                                "MUL_34","MUL_36","MUL_39","MUL_42","MUL_44","MUL_45","MUL_47","MUL_48","MUL_50","MUL_51","MUL_52","MUL_54",
+                                "MUL_60","MUL_61","MUL_63","MUL_64","MUL_65"];
+            var MULmythics  = [ "MUL_3","MUL_4","MUL_11","MUL_16","MUL_17","MUL_21","MUL_24","MUL_29","MUL_33","MUL_35","MUL_38","MUL_41","MUL_49","MUL_53","MUL_64"];
+            var bilands     = [ 267,268,269,270,271,272,273,274,275,276];
+            var basics      = [ 277,278,279,280,281,282,283,284,285,286,287,288,289,290,291];
+
+            var ALLcommons  = SFCcommons.concat(FLPcommons).concat(bilands).concat(basics);
+            var ALLuncos    = SFCuncos.concat(BATuncos).concat(FLPuncos).concat(MULuncos);
+            var ALLrares    = SFCrares.concat(BATrares).concat(FLPrares).concat(MULrares);
+            var ALLmythics  = SFCmythics.concat(BATmythics).concat(FLPmythics).concat(MULmythics);
+
+            // urm sfc
+            var rand = Math.ceil(Math.random()*15);
+            var urmsfc = "";
+            if(rand > 4) { urmsfc = "unco"; }
+            else if(rand > 1) { urmsfc = "rare"; }
+            else if(rand == 1) { urmsfc = "myth"; }
+
+            // urm battle
+            var rand = Math.ceil(Math.random()*15);
+            var urmbat = "";
+            if(rand > 4) { urmbat = "unco"; }
+            else if(rand > 1) { urmbat = "rare"; }
+            else if(rand == 1) { urmbat = "myth"; }
+
+            // urm mul
+            var rand = Math.ceil(Math.random()*15);
+            var urmmul = "";
+            if(rand > 4) { urmmul = "unco"; }
+            else if(rand > 1) { urmmul = "rare"; }
+            else if(rand == 1) { urmmul = "myth"; }
+
+            // curm flip
+            var rand = Math.ceil(Math.random()*120);
+            var curmflip = "";
+            if(rand > 32) { curmflip = "comm"; }
+            else if(rand > 8) { curmflip = "unco"; }
+            else if(rand > 1) { curmflip = "rare"; }
+            else if(rand == 1) { curmflip = "myth"; } 
+
+            // mini 1 rare
+            if( urmsfc != "rare" && urmbat != "rare" && urmmul != "rare" && curmflip != "rare" && 
+                urmsfc != "myth" && urmbat != "myth" && urmmul != "myth" && curmflip != "myth") {
+                
+                var rand = Math.ceil(Math.random()*4);
+                if(rand == 1) {urmsfc = "rare";}
+                else if(rand == 2) {urmbat = "rare";}
+                else if(rand == 3) {urmmul = "rare";}
+                else if(rand == 4) {curmflip = "rare";}
+                }
+
+            // gainland
+            var rand = Math.random();
+            var gainland = "no";
+            if(rand>=0.5){ gainland = "yes";}
+
+            // foil
+            var rand = Math.ceil(Math.random()*360); // dans 66% des common, et dans 88/120 du reste c'est common aussi, donc 328/360
+            var foil = "";
+            if(rand > 32) { foil = "comm"; }
+            else if(rand > 8) { foil = "unco"; }
+            else if(rand > 1) { foil = "rare"; }
+            else if(rand == 1) { foil = "myth"; } 
+
+            // let's add the 7 SFC commons
+            for (let i = 0; i < 7; i++) {
+                booster = booster + SFCcommons[Math.floor(Math.random() * SFCcommons.length)] + " ";
+            }
+            // let's add  the 2 SFC uncommons
+            for (let i = 0; i < 2; i++) {
+                booster = booster + SFCuncos[Math.floor(Math.random() * SFCuncos.length)] + " ";
+            }
+            // let's add the urm sfc
+            if(urmsfc == "unco") { booster = booster + SFCuncos[Math.floor(Math.random() * SFCuncos.length)] + " "; }
+            if(urmsfc == "rare") { booster = booster + SFCrares[Math.floor(Math.random() * SFCrares.length)] + " "; }
+            if(urmsfc == "myth") { booster = booster + SFCmythics[Math.floor(Math.random() * SFCmythics.length)] + " "; }
+            // let's add the curm flip
+            if(curmflip == "comm") { booster = booster + FLPcommons[Math.floor(Math.random() * FLPcommons.length)] + " "; }
+            if(curmflip == "unco") { booster = booster + FLPuncos[Math.floor(Math.random() * FLPuncos.length)] + " "; }
+            if(curmflip == "rare") { booster = booster + FLPrares[Math.floor(Math.random() * FLPrares.length)] + " "; }
+            if(curmflip == "myth") { booster = booster + FLPmythics[Math.floor(Math.random() * FLPmythics.length)] + " "; }
+            // let's add the urm battle
+            if(urmbat == "unco") { booster = booster + BATuncos[Math.floor(Math.random() * BATuncos.length)] + " "; }
+            if(urmbat == "rare") { booster = booster + BATrares[Math.floor(Math.random() * BATrares.length)] + " "; }
+            if(urmbat == "myth") { booster = booster + BATmythics[Math.floor(Math.random() * BATmythics.length)] + " "; }
+            // let's add the urm mul
+            if(urmmul == "unco") { booster = booster + MULuncos[Math.floor(Math.random() * MULuncos.length)] + " "; }
+            if(urmmul == "rare") { booster = booster + MULrares[Math.floor(Math.random() * MULrares.length)] + " "; }
+            if(urmmul == "myth") { booster = booster + MULmythics[Math.floor(Math.random() * MULmythics.length)] + " "; }
+            // let's add the land
+            if(gainland == "no") { booster = booster + basics[Math.floor(Math.random() * basics.length)] + " "; }
+            else                    { booster = booster + bilands[Math.floor(Math.random() * bilands.length)] + " ";}
+            // let's add the foil
+            if(foil == "comm") { booster = booster + ALLcommons[Math.floor(Math.random() * ALLcommons.length)]; }
+            if(foil == "unco") { booster = booster + ALLuncos[Math.floor(Math.random() * ALLuncos.length)]; }
+            if(foil == "rare") { booster = booster + ALLrares[Math.floor(Math.random() * ALLrares.length)]; }
+            if(foil == "myth") { booster = booster + ALLmythics[Math.floor(Math.random() * ALLmythics.length)]; }            
+
+            return booster;
+        }
+    </script>
+
+    </body>
+</html>
